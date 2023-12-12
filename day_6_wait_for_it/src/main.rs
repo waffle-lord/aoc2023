@@ -3,7 +3,9 @@ mod part1;
 mod part2;
 mod model;
 
-const TEST_INPUT: &str = "";
+const TEST_INPUT: &str = "Time:      7  15   30
+Distance:  9  40  200";
+
 
 const INPUT_FILE: &str = "./src/input.txt";
 
@@ -23,8 +25,8 @@ fn main() {
     let test_input: Vec<String> = TEST_INPUT.lines().map(String::from).collect();
     let input: Vec<String> = read_lines(INPUT_FILE);
 
-    let part1_answer = part1::run();
-    let part2_answer = part2::run();
+    let part1_answer = part1::run(&input);
+    let part2_answer = part2::run(&input);
 
     println!("==============");
     println!("Part 1 Answer: {}", part1_answer);
