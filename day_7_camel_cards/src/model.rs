@@ -51,3 +51,51 @@ impl Lexer {
 
 // ----------------------- ----------------------- ----------------------- -----------------------
 
+pub enum Card {
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Jack,
+    Queen,
+    King,
+    Ace,
+}
+
+impl Card {
+    fn get_value(&self) -> i8 {
+        match self {
+            Card::Two => 2,
+            Card::Three => 3,
+            Card::Four => 4,
+            Card::Five => 5,
+            Card::Six => 6,
+            Card::Seven => 7,
+            Card::Eight => 8,
+            Card::Nine => 9,
+            Card::Ten => 10,
+            Card::Jack => 11,
+            Card::Queen => 12,
+            Card::King => 13,
+            Card::Ace => 14,
+        }
+    }
+
+    fn is_higher_value(&self, other: &Card) -> bool {
+        self.get_value() > other.get_value()
+    }
+}
+
+pub struct Hand {
+    pub cards: Vec<Card>,
+}
+
+
+impl Hand {
+    
+}

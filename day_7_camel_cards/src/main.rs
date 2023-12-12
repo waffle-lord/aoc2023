@@ -3,9 +3,11 @@ mod part1;
 mod part2;
 mod model;
 
-const TEST_INPUT: &str = "sldflksjdf
-slkdfjlksdj
-sdlfsjdlffj";
+const TEST_INPUT: &str = "32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483";
 
 const INPUT_FILE: &str = "./src/input.txt";
 
@@ -25,7 +27,7 @@ fn main() {
     let test_input: Vec<String> = TEST_INPUT.lines().map(String::from).collect();
     let input: Vec<String> = read_lines(INPUT_FILE);
 
-    let part1_answer = part1::run();
+    let part1_answer = part1::run(&test_input);
     let part2_answer = part2::run();
 
     println!("==============");
