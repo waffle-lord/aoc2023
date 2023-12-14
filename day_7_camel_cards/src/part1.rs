@@ -1,4 +1,4 @@
-use std::{ops::Index, collections::HashMap};
+use std::{collections::HashMap, cmp::Ordering,};
 
 use crate::model::Hand;
 
@@ -28,7 +28,22 @@ pub fn run(input: &Vec<String>) -> i64 {
             continue;
         }
 
-        strength_set.sort_by(|a, b| a.get_value().cmp(&b.get_value()));
+        strength_set.sort_by(|a, b| {
+            for i in 0..a.cards.len() {
+                let a_value = a.cards[i].get_value();
+                let b_value = b.cards[i].get_value();
+
+                if a_value > b_value {
+                    return Ordering::Greater;
+                }
+
+                if a_value < b_value {
+                    return Ordering::Less;
+                }
+            }
+
+            return Ordering::Equal;
+        });
     }
 
     let mut ordered_hands: Vec<(i8, Vec<&Hand>)> = ordered_hands
@@ -47,6 +62,8 @@ pub fn run(input: &Vec<String>) -> i64 {
 
     for i in 0..hands.len() {
         let multiplier: i64 = (i + 1) as i64;
+
+        println!("r:{} * b:{} = {} :: {:?} -> {}", multiplier, hands[i].bid, hands[i].bid * multiplier, hands[i].strength, hands[i].original);
 
         total += hands[i].bid * multiplier;
     }

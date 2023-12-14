@@ -78,6 +78,11 @@ impl Strength {
             _ => -1
         }
     }
+
+    pub fn from_cards_with_jonklers(cards: &Vec<Card>) -> Strength {
+        todo!()
+    }
+
     pub fn from_cards(cards: &Vec<Card>) -> Strength {
         let mut counts: HashMap<i8, i8> = HashMap::new();
 
@@ -148,7 +153,7 @@ impl Card {
         }
     }
 
-    fn get_value(&self) -> i8 {
+    pub fn get_value(&self) -> i8 {
         match self {
             Card::Two => 0,
             Card::Three => 1,
@@ -166,9 +171,6 @@ impl Card {
         }
     }
 
-    pub fn is_higher_value(&self, other: &Card) -> bool {
-        self.get_value() > other.get_value()
-    }
 }
 
 #[derive(Debug)]
@@ -181,13 +183,6 @@ pub struct Hand {
 
 
 impl Hand {
-    pub fn get_value(&self) -> i64 {
-        let chars: Vec<String> = self.cards.iter()
-            .map(|c| c.get_value().to_string())
-            .collect();
-
-        chars.concat().parse().unwrap()
-    }
     pub fn parse(line: &String) -> Hand {
         let card_info: Vec<&str> = line.split(" ").collect();
         let cards = card_info[0];
