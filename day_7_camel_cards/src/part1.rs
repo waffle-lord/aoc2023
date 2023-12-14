@@ -1,41 +1,56 @@
-use crate::model::Hand;
+use std::{ops::Index, collections::HashMap};
 
+use crate::model::Hand;
 
 pub fn run(input: &Vec<String>) -> i64 { 
     let mut hands: Vec<Hand> = Vec::new();
+    let mut ordered_hands: HashMap<i8, Vec<&Hand>> = HashMap::new();
 
-
+    // get all hands
     for line in input.iter() {
         hands.push(Hand::parse(line));
     }
 
-    hands.sort_by(|a, b| a.strength.get_value().cmp(&b.strength.get_value()));
-
-    // this is all fucked, I have no idea how to swap values in an array in rust :(
     for i in 0..hands.len() {
-        let mut current_hand = hands[i];
+        match ordered_hands.get_mut(&hands[i].strength.get_value()) {
+            Some(v) => v.push(&hands[i]),
+            None => {
+                let mut new_hands: Vec<&Hand> = Vec::new();
+                new_hands.push(&hands[i]);
+                ordered_hands.insert(hands[i].strength.get_value(), new_hands);
+            },
+        }
+    }
 
-        current_hand.rank = i.try_into().unwrap();
-
-        if i == 0 {
+    for strength_set in ordered_hands.values_mut() {
+        // just continue if the strength set only has 1 value. Nothing to order
+        if strength_set.len() == 1 {
             continue;
         }
 
-        let mut previous_hand = hands[i - 1];
-
-        if previous_hand.strength.get_value() == current_hand.strength.get_value() {
-            for n in 0..current_hand.cards.len() {
-                if previous_hand.cards[n].is_higher_value(&current_hand.cards[n]) {
-                    hands[i] = previous_hand;
-                    hands[i-1] = current_hand;
-                }
-            }
-        }
+        strength_set.sort_by(|a, b| a.get_value().cmp(&b.get_value()));
     }
 
-    
-    for hand in hands.iter() {
-        println!("rank: {} - {:?}", hand.rank, hand.strength);
+    let mut ordered_hands: Vec<(i8, Vec<&Hand>)> = ordered_hands
+        .into_iter()
+        .collect();
+
+    ordered_hands.sort_by(|a, b| a.0.cmp(&b.0));
+
+    let hands: Vec<&Hand> = ordered_hands
+        .into_iter()
+        .map(|i| i.1)
+        .flatten()
+        .collect();
+
+    let mut total: i64 = 0;
+
+    for i in 0..hands.len() {
+        let multiplier: i64 = (i + 1) as i64;
+
+        total += hands[i].bid * multiplier;
     }
-    todo!()
+
+
+    total
 }

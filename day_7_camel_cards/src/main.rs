@@ -27,7 +27,7 @@ fn main() {
     let test_input: Vec<String> = TEST_INPUT.lines().map(String::from).collect();
     let input: Vec<String> = read_lines(INPUT_FILE);
 
-    let part1_answer = part1::run(&test_input);
+    let part1_answer = part1::run(&input);
     let part2_answer = part2::run();
 
     println!("==============");

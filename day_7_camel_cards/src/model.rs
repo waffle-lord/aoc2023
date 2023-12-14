@@ -173,20 +173,30 @@ impl Card {
 
 #[derive(Debug)]
 pub struct Hand {
-    pub rank: i64,
+    pub original: String,
+    pub bid: i64,
     pub strength: Strength,
     pub cards: Vec<Card>,
 }
 
 
 impl Hand {
+    pub fn get_value(&self) -> i64 {
+        let chars: Vec<String> = self.cards.iter()
+            .map(|c| c.get_value().to_string())
+            .collect();
+
+        chars.concat().parse().unwrap()
+    }
     pub fn parse(line: &String) -> Hand {
         let card_info: Vec<&str> = line.split(" ").collect();
         let cards = card_info[0];
-        let bid = card_info[1];
+        let bid = card_info[1].parse().unwrap();
+
 
         let mut hand = Hand {
-            rank: -1,
+            original: cards.to_string(),
+            bid,
             strength: Strength::Unknown,
             cards: Vec::new(),
         };
