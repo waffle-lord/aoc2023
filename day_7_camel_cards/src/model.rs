@@ -66,12 +66,24 @@ pub enum Strength {
 }
 
 impl Strength {
+    pub fn get_value(&self) -> i8 {
+        match self {
+            Strength::HighCard => 0,
+            Strength::OnePair => 1,
+            Strength::TwoPair => 2,
+            Strength::ThreeOfKind => 3,
+            Strength::FullHouse => 4,
+            Strength::FourOfKind => 5,
+            Strength::FiveOfKind => 6,
+            _ => -1
+        }
+    }
     pub fn from_cards(cards: &Vec<Card>) -> Strength {
         let mut counts: HashMap<i8, i8> = HashMap::new();
 
         for c in cards.iter() {
             match counts.get_mut(&c.get_value()) {
-                Some(_) => *counts.get_mut(&c.get_value()).unwrap() += 1,
+                Some(v) => *v += 1,
                 None => {counts.insert(c.get_value(), 1);},
             }
         }
@@ -138,23 +150,23 @@ impl Card {
 
     fn get_value(&self) -> i8 {
         match self {
-            Card::Two => 2,
-            Card::Three => 3,
-            Card::Four => 4,
-            Card::Five => 5,
-            Card::Six => 6,
-            Card::Seven => 7,
-            Card::Eight => 8,
-            Card::Nine => 9,
-            Card::Ten => 10,
-            Card::Jack => 11,
-            Card::Queen => 12,
-            Card::King => 13,
-            Card::Ace => 14,
+            Card::Two => 0,
+            Card::Three => 1,
+            Card::Four => 2,
+            Card::Five => 3,
+            Card::Six => 4,
+            Card::Seven => 5,
+            Card::Eight => 6,
+            Card::Nine => 7,
+            Card::Ten => 8,
+            Card::Jack => 9,
+            Card::Queen => 10,
+            Card::King => 11,
+            Card::Ace => 12,
         }
     }
 
-    fn is_higher_value(&self, other: &Card) -> bool {
+    pub fn is_higher_value(&self, other: &Card) -> bool {
         self.get_value() > other.get_value()
     }
 }
