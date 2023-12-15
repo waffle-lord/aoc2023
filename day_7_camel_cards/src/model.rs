@@ -84,9 +84,9 @@ impl Strength {
         let mut counts: HashMap<i8, i8> = HashMap::new();
 
         for c in cards.iter() {
-            match counts.get_mut(&c.get_value()) {
+            match counts.get_mut(&c.get_value(false)) {
                 Some(v) => *v += 1,
-                None => {counts.insert(c.get_value(), 1);},
+                None => {counts.insert(c.get_value(false), 1);},
             }
         }
 
@@ -151,7 +151,7 @@ impl Card {
         }
     }
 
-    pub fn get_value(&self) -> i8 {
+    pub fn get_value(&self, we_jonklin: bool) -> i8 {
         match self {
             Card::Two => 0,
             Card::Three => 1,
@@ -162,7 +162,13 @@ impl Card {
             Card::Eight => 6,
             Card::Nine => 7,
             Card::Ten => 8,
-            Card::Jack => 9,
+            Card::Jack => {
+                if we_jonklin {
+                    return -1;
+                }
+
+                return 9;
+            }
             Card::Queen => 10,
             Card::King => 11,
             Card::Ace => 12,
@@ -183,7 +189,13 @@ pub struct Hand {
 
 impl Hand {
     pub fn with_jonklers(&mut self) {
-        let j_count = self.cards.iter().filter(|c| c.get_value() == 9).count();
+        let mut j_count = 0;
+
+        for c in self.cards.iter() {
+            if c.get_value(true) == -1 | 9 {
+                j_count += 1;
+            }
+        }
 
         match self.strength {
             Strength::HighCard => {
@@ -277,8 +289,8 @@ pub fn get_ordered_hands(input: &Vec<String>, with_jonklers: bool) -> Vec<Hand> 
 
         strength_set.sort_by(|a, b| {
             for i in 0..a.cards.len() {
-                let a_value = a.cards[i].get_value();
-                let b_value = b.cards[i].get_value();
+                let a_value = a.cards[i].get_value(with_jonklers);
+                let b_value = b.cards[i].get_value(with_jonklers);
 
                 if a_value > b_value {
                     return Ordering::Greater;
