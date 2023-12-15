@@ -28,7 +28,7 @@ fn main() {
     let input: Vec<String> = read_lines(INPUT_FILE);
 
     let part1_answer = part1::run(&input);
-    let part2_answer = part2::run();
+    let part2_answer = part2::run(&input);
 
     println!("==============");
     println!("Part 1 Answer: {}", part1_answer);

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, cmp::Ordering};
 
 pub struct Lexer {}
 
@@ -54,10 +54,11 @@ impl Lexer {
 // ----------------------- ----------------------- ----------------------- -----------------------
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Strength {
     Unknown,
-    HighCard, // 5 counts
-    OnePair, // 4 counts
+    HighCard, // 5 counts,
+    OnePair, // 4 counts,
     TwoPair, // 3 counts
     ThreeOfKind, // 3 counts
     FullHouse, // 2 counts
@@ -77,10 +78,6 @@ impl Strength {
             Strength::FiveOfKind => 6,
             _ => -1
         }
-    }
-
-    pub fn from_cards_with_jonklers(cards: &Vec<Card>) -> Strength {
-        todo!()
     }
 
     pub fn from_cards(cards: &Vec<Card>) -> Strength {
@@ -117,6 +114,7 @@ impl Strength {
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub enum Card {
     Two,
     Three,
@@ -174,6 +172,7 @@ impl Card {
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Hand {
     pub original: String,
     pub bid: i64,
@@ -183,6 +182,42 @@ pub struct Hand {
 
 
 impl Hand {
+    pub fn with_jonklers(&mut self) {
+        let j_count = self.cards.iter().filter(|c| c.get_value() == 9).count();
+
+        match self.strength {
+            Strength::HighCard => {
+                if j_count > 0 {
+                    self.strength = Strength::OnePair;
+                }
+            },
+            Strength::OnePair => {
+                if j_count > 0 {
+                    self.strength = Strength::ThreeOfKind;
+                }
+            },
+            Strength::TwoPair => {
+                if j_count == 1 {
+                    self.strength = Strength::FullHouse
+                }
+                else if j_count == 2 {
+                    self.strength = Strength::FourOfKind
+                }
+            },
+            Strength::ThreeOfKind => {
+                if j_count > 0 {
+                    self.strength = Strength::FourOfKind;
+                }
+            },
+            Strength::FullHouse | Strength::FourOfKind => {
+                if j_count > 0 {
+                    self.strength = Strength::FiveOfKind;
+                }
+            }
+            _ => {} // five of a kind or unknown should just return self
+        }
+    }
+
     pub fn parse(line: &String) -> Hand {
         let card_info: Vec<&str> = line.split(" ").collect();
         let cards = card_info[0];
@@ -207,8 +242,72 @@ impl Hand {
     }
 }
 
+pub fn get_ordered_hands(input: &Vec<String>, with_jonklers: bool) -> Vec<Hand> {
 
+    let mut hands: Vec<Hand> = Vec::new();
+    let mut ordered_hands: HashMap<i8, Vec<&Hand>> = HashMap::new();
 
+    // get all hands
+    for line in input.iter() {
+        let mut hand = Hand::parse(line);
+        
+        if with_jonklers {
+            hand.with_jonklers();
+        }
+
+        hands.push(hand);
+    }
+
+    for i in 0..hands.len() {
+        match ordered_hands.get_mut(&hands[i].strength.get_value()) {
+            Some(v) => v.push(&hands[i]),
+            None => {
+                let mut new_hands: Vec<&Hand> = Vec::new();
+                new_hands.push(&hands[i]);
+                ordered_hands.insert(hands[i].strength.get_value(), new_hands);
+            },
+        }
+    }
+
+    for strength_set in ordered_hands.values_mut() {
+        // just continue if the strength set only has 1 value. Nothing to order
+        if strength_set.len() == 1 {
+            continue;
+        }
+
+        strength_set.sort_by(|a, b| {
+            for i in 0..a.cards.len() {
+                let a_value = a.cards[i].get_value();
+                let b_value = b.cards[i].get_value();
+
+                if a_value > b_value {
+                    return Ordering::Greater;
+                }
+
+                if a_value < b_value {
+                    return Ordering::Less;
+                }
+            }
+
+            return Ordering::Equal;
+        });
+    }
+
+    let mut ordered_hands: Vec<(i8, Vec<&Hand>)> = ordered_hands
+        .into_iter()
+        .collect();
+
+    ordered_hands.sort_by(|a, b| a.0.cmp(&b.0));
+
+    let hands: Vec<Hand> = ordered_hands
+        .into_iter()
+        .map(|i| i.1)
+        .flatten()
+        .cloned()
+        .collect();
+
+    hands
+}
 
 
 
