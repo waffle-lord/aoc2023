@@ -1,4 +1,4 @@
 
-pub fn run() -> String {
-    String::from("Hello")
+pub fn run(input: &Vec<String>) -> i64 {
+    -1
 }
