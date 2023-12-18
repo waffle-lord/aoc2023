@@ -35,14 +35,14 @@ fn read_lines(filename: &str) -> Vec<String> {
 }
 
 fn main() {
-    let test_input: Vec<String> = TEST_INPUT.lines().map(String::from).collect();
-    let test_input2: Vec<String> = TEST_INPUT2.lines().map(String::from).collect();
+    let _test_input: Vec<String> = TEST_INPUT.lines().map(String::from).collect();
+    let _test_input2: Vec<String> = TEST_INPUT2.lines().map(String::from).collect();
     let input: Vec<String> = read_lines(INPUT_FILE);
 
-    // let part1_answer = part1::run(&input);
+    let part1_answer = part1::run(&input);
     let part2_answer = part2::run(&input);
 
     println!("==============");
-    // println!("Part 1 Answer: {}", part1_answer);
+    println!("Part 1 Answer: {}", part1_answer);
     println!("Part 2 Answer: {}", part2_answer);
 }
